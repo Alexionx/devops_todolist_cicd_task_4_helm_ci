@@ -83,7 +83,8 @@ jobs:
 
   helm-ci:
     runs-on: ubuntu-latest
-    if: ${{ github.ref_name == 'your_name' }}
+    if: ${{ github.ref_name == 'main' }}
+    needs: docker-ci
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -99,13 +100,13 @@ jobs:
 
       - name: Run helm template
         run: |
-          helm template todoapp ./helm-charts
+          helm template todoapp ./helm-charts/todoapp
 
       - name: Lint helm chart
-        run: helm lint ./helm-chart
+        run: helm lint ./helm-charts/todoapp
 
       - name: Package helm chart
-        run: helm package ./helm-charts
+        run: helm package ./helm-charts/todoapp
 
       - name: Upload packaged chart
         uses: actions/upload-artifact@v4
