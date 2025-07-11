@@ -80,3 +80,30 @@ jobs:
         push: true
         context: ./src
         tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DockerImageName }}:${{ github.sha }}
+
+  helm-ci:
+    runs-on: ubuntu-latest
+    if: ${{ github.ref_name == 'your_name' }}
+    needs: checkout-repo
+    steps:
+      - name: Download Helm Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: python-artifacts
+          path: ./src
+
+      - name: Run helm template
+        run: |
+          helm template todoapp ./helm-charts
+
+      - name: Lint helm chart
+        run: helm lint ./helm-chart
+
+      - name: Package helm chart
+        run: helm package ./helm-charts
+
+      - name: Upload packaged chart
+        uses: actions/upload-artifact@v4
+        with:
+          name: todoapp-chart
+          path: ./todoapp-*.tgz
